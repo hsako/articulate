@@ -1,8 +1,8 @@
 import React from "react";
 import "./App.css";
-import data from "./data.json";
+import PropTypes from 'prop-types';
 
-export default function App() {
+const TabBlock = ({tabData}) => {
   const renderTab = (item, index) => (
     <div
       className={`list-group-item ${index === 0 ? "active" : ""}`}
@@ -17,30 +17,31 @@ export default function App() {
     </div>
   );
 
-  const renderTabs = () => {
+  const renderTabs = tabData => {
     return (
       <div
         className="list-group list-group-horizontal styling-for-scrollmenu"
         id="list-tab"
         role="tablist"
       >
-        {data.map(renderTab)}
+        {tabData.map(renderTab)}
       </div>
     );
   };
 
-  const renderPanels = () => {
-    return <div className="tab-content">{data.map(renderPanel)}</div>;
+  const renderPanels = tabData => {
+    return <div className="tab-content">{tabData.map(renderPanel)}</div>;
   };
 
   const renderPanel = (item, index) => (
     <div
       className={`tab-pane ${index === 0 ? "active" : ""}`}
+      key={item.id}
       id={`list-${item.id}`}
       role="tabpanel"
-      aria-controls={item.string}
+      aria-controls={item.blurb}
     >
-      <div>{item.string}</div>
+      <div>{item.blurb}</div>
       {renderPhoto(item.image)}
     </div>
   );
@@ -57,9 +58,26 @@ export default function App() {
     <div>
       <h1 className="styling-for-header">Articulate Assignment</h1>
       <div className="container styling-for-container">
-        <div className="styling-for-tab">{renderTabs()}</div>
-        <div className="padding">{renderPanels()}</div>
+        <div className="styling-for-tab">{renderTabs(tabData)}</div>
+        <div className="padding">{renderPanels(tabData)}</div>
       </div>
     </div>
-  );
+    );
+};
+
+TabBlock.propTypes = {
+  tabData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      headline: PropTypes.string.isRequired,
+      blurb: PropTypes.string.isRequired,
+      image: PropTypes.string
+    })
+  ).isRequired,
+
 }
+
+
+export default TabBlock;
+
+
