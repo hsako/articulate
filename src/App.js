@@ -1,17 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import "./App.css";
 import PropTypes from 'prop-types';
 
 const TabBlock = ({tabData}) => {
+  const [idSelected, setIdSelected] = useState(null);
+
+  const isActive = (itemIndex, id) => {
+    if (idSelected === null) { // Initial state
+      return itemIndex === 0;
+    } else {
+      return id === idSelected;
+    }
+  }
+
   const renderTab = (item, index) => (
     <div
-      className={`list-group-item ${index === 0 ? "active" : ""}`}
+      className={`list-group-item ${isActive(index, item.id) ? "active" : ""}`}
       key={item.id}
-      id={`list-${item.id}-list`}
-      data-toggle="list"
-      href={`#list-${item.id}`}
-      role="tab"
-      aria-controls={item.headline}
+      onClick={() => setIdSelected(item.id)}
     >
       {item.headline}
     </div>
@@ -22,7 +28,6 @@ const TabBlock = ({tabData}) => {
       <div
         className="list-group list-group-horizontal styling-for-scrollmenu"
         id="list-tab"
-        role="tablist"
       >
         {tabData.map(renderTab)}
       </div>
@@ -33,23 +38,26 @@ const TabBlock = ({tabData}) => {
     return <div className="tab-content">{tabData.map(renderPanel)}</div>;
   };
 
-  const renderPanel = (item, index) => (
-    <div
-      className={`tab-pane ${index === 0 ? "active" : ""}`}
-      key={item.id}
-      id={`list-${item.id}`}
-      role="tabpanel"
-      aria-controls={item.blurb}
-    >
-      <div>{item.blurb}</div>
-      {renderPhoto(item.image)}
-    </div>
-  );
+  const renderPanel = (item, index) => {
+    if (isActive(index, item.id)) {
+      return (
+        <div
+          className="tab-pane active"
+          key={item.id}
+        >
+          <div>{item.blurb}</div>
+          {renderPhoto(item.image)}
+        </div>
+      )
+    } else {
+      return null;
+    }
+  };
 
   const renderPhoto = image => {
     if (image) {
       return (
-        <img src={image} className="padding img-fluid" alt="Responsive image" />
+        <img src={image} className="padding img-fluid" alt="Illustration" />
       );
     }
   };
